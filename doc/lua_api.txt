@@ -1165,165 +1165,6 @@ A box of a regular node would look like:
 
 
 
-HUD
-===
-
-HUD element types
------------------
-
-The position field is used for all element types.
-
-To account for differing resolutions, the position coordinates are the
-percentage of the screen, ranging in value from `0` to `1`.
-
-The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
-
-`0` draws from left to right, `1` draws from right to left, `2` draws from
-top to bottom, and `3` draws from bottom to top.
-
-The `alignment` field specifies how the item will be aligned. It is a table
-where `x` and `y` range from `-1` to `1`, with `0` being central. `-1` is
-moved to the left/up, and `1` is to the right/down. Fractional values can be
-used.
-
-The `offset` field specifies a pixel offset from the position. Contrary to
-position, the offset is not scaled to screen size. This allows for some
-precisely positioned items in the HUD.
-
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
-factor!
-
-Below are the specific uses for fields in each type; fields not listed for that
-type are ignored.
-
-### `image`
-
-Displays an image on the HUD.
-
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
-* `text`: The name of the texture that is displayed.
-* `alignment`: The alignment of the image.
-* `offset`: offset in pixels from position.
-
-### `text`
-
-Displays text on the HUD.
-
-* `scale`: Defines the bounding rectangle of the text.
-  A value such as `{x=100, y=100}` should work.
-* `text`: The text to be displayed in the HUD element.
-* `number`: An integer containing the RGB value of the color used to draw the
-  text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
-* `alignment`: The alignment of the text.
-* `offset`: offset in pixels from position.
-
-### `statbar`
-
-Displays a horizontal bar made up of half-images.
-
-* `text`: The name of the texture that is used.
-* `number`: The number of half-textures that are displayed.
-  If odd, will end with a vertically center-split texture.
-* `direction`
-* `offset`: offset in pixels from position.
-* `size`: If used, will force full-image size to this value (override texture
-  pack image size)
-
-### `inventory`
-
-* `text`: The name of the inventory list to be displayed.
-* `number`: Number of items in the inventory to be displayed.
-* `item`: Position of item that is selected.
-* `direction`
-* `offset`: offset in pixels from position.
-
-### `waypoint`
-
-Displays distance to selected world position.
-
-* `name`: The name of the waypoint.
-* `text`: Distance suffix. Can be blank.
-* `number:` An integer containing the RGB value of the color used to draw the
-  text.
-* `world_pos`: World position of the waypoint.
-
-
-
-
-Representations of simple things
-================================
-
-Position/vector
----------------
-
-    {x=num, y=num, z=num}
-
-For helper functions see [Spatial Vectors].
-
-`pointed_thing`
----------------
-
-* `{type="nothing"}`
-* `{type="node", under=pos, above=pos}`
-* `{type="object", ref=ObjectRef}`
-
-Exact pointing location (currently only `Raycast` supports these fields):
-
-* `pointed_thing.intersection_point`: The absolute world coordinates of the
-  point on the selection box which is pointed at. May be in the selection box
-  if the pointer is in the box too.
-* `pointed_thing.box_id`: The ID of the pointed selection box (counting starts
-  from 1).
-* `pointed_thing.intersection_normal`: Unit vector, points outwards of the
-  selected selection box. This specifies which face is pointed at.
-  Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
-  selection box.
-
-
-
-
-Flag Specifier Format
-=====================
-
-Flags using the standardized flag specifier format can be specified in either
-of two ways, by string or table.
-
-The string format is a comma-delimited set of flag names; whitespace and
-unrecognized flag fields are ignored. Specifying a flag in the string sets the
-flag, and specifying a flag prefixed by the string `"no"` explicitly
-clears the flag from whatever the default may be.
-
-In addition to the standard string flag format, the schematic flags field can
-also be a table of flag names to boolean values representing whether or not the
-flag is set. Additionally, if a field with the flag name prefixed with `"no"`
-is present, mapped to a boolean of any value, the specified flag is unset.
-
-E.g. A flag field of value
-
-    {place_center_x = true, place_center_y=false, place_center_z=true}
-
-is equivalent to
-
-    {place_center_x = true, noplace_center_y=true, place_center_z=true}
-
-which is equivalent to
-
-    "place_center_x, noplace_center_y, place_center_z"
-
-or even
-
-    "place_center_x, place_center_z"
-
-since, by default, no schematic attributes are set.
-
-
-
-
 Items
 =====
 
@@ -1791,6 +1632,95 @@ Example:
     local meta = stack:get_meta()
     meta:set_string("key", "value")
     print(dump(meta:to_table()))
+
+
+
+
+HUD
+===
+
+HUD element types
+-----------------
+
+The position field is used for all element types.
+
+To account for differing resolutions, the position coordinates are the
+percentage of the screen, ranging in value from `0` to `1`.
+
+The name field is not yet used, but should contain a description of what the
+HUD element represents. The direction field is the direction in which something
+is drawn.
+
+`0` draws from left to right, `1` draws from right to left, `2` draws from
+top to bottom, and `3` draws from bottom to top.
+
+The `alignment` field specifies how the item will be aligned. It ranges from
+`-1` to `1`, with `0` being the center. `-1` is moved to the left/up, and `1`
+is to the right/down. Fractional values can be used.
+
+The `offset` field specifies a pixel offset from the position. Contrary to
+position, the offset is not scaled to screen size. This allows for some
+precisely positioned items in the HUD.
+
+**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
+factor!
+
+Below are the specific uses for fields in each type; fields not listed for that
+type are ignored.
+
+### `image`
+
+Displays an image on the HUD.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `offset`: offset in pixels from position.
+
+### `text`
+
+Displays text on the HUD.
+
+* `scale`: Defines the bounding rectangle of the text.
+  A value such as `{x=100, y=100}` should work.
+* `text`: The text to be displayed in the HUD element.
+* `number`: An integer containing the RGB value of the color used to draw the
+  text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
+* `alignment`: The alignment of the text.
+* `offset`: offset in pixels from position.
+
+### `statbar`
+
+Displays a horizontal bar made up of half-images.
+
+* `text`: The name of the texture that is used.
+* `number`: The number of half-textures that are displayed.
+  If odd, will end with a vertically center-split texture.
+* `direction`
+* `offset`: offset in pixels from position.
+* `size`: If used, will force full-image size to this value (override texture
+  pack image size)
+
+### `inventory`
+
+* `text`: The name of the inventory list to be displayed.
+* `number`: Number of items in the inventory to be displayed.
+* `item`: Position of item that is selected.
+* `direction`
+* `offset`: offset in pixels from position.
+
+### `waypoint`
+
+Displays distance to selected world position.
+
+* `name`: The name of the waypoint.
+* `text`: Distance suffix. Can be blank.
+* `number:` An integer containing the RGB value of the color used to draw the
+  text.
+* `world_pos`: World position of the waypoint.
 
 
 
@@ -2294,6 +2224,38 @@ The following functions provide escape sequences:
     * Removes background colors added by `get_background_escape_sequence`.
 * `minetest.strip_colors(str)`
     * Removes all color escape sequences.
+
+
+
+
+Representations of simple things
+================================
+
+Position/vector
+---------------
+
+    {x=num, y=num, z=num}
+
+For helper functions see [Spatial Vectors].
+
+`pointed_thing`
+---------------
+
+* `{type="nothing"}`
+* `{type="node", under=pos, above=pos}`
+* `{type="object", ref=ObjectRef}`
+
+Exact pointing location (currently only `Raycast` supports these fields):
+
+* `pointed_thing.intersection_point`: The absolute world coordinates of the
+  point on the selection box which is pointed at. May be in the selection box
+  if the pointer is in the box too.
+* `pointed_thing.box_id`: The ID of the pointed selection box (counting starts
+  from 1).
+* `pointed_thing.intersection_normal`: Unit vector, points outwards of the
+  selected selection box. This specifies which face is pointed at.
+  Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
+  selection box.
 
 
 
@@ -3345,6 +3307,43 @@ Callbacks:
 * `get_staticdata(self)`
     * Should return a string that will be passed to `on_activate` when the
       object is instantiated the next time.
+
+
+
+
+Flag Specifier Format
+=====================
+
+Flags using the standardized flag specifier format can be specified in either
+of two ways, by string or table.
+
+The string format is a comma-delimited set of flag names; whitespace and
+unrecognized flag fields are ignored. Specifying a flag in the string sets the
+flag, and specifying a flag prefixed by the string `"no"` explicitly
+clears the flag from whatever the default may be.
+
+In addition to the standard string flag format, the schematic flags field can
+also be a table of flag names to boolean values representing whether or not the
+flag is set. Additionally, if a field with the flag name prefixed with `"no"`
+is present, mapped to a boolean of any value, the specified flag is unset.
+
+E.g. A flag field of value
+
+    {place_center_x = true, place_center_y=false, place_center_z=true}
+
+is equivalent to
+
+    {place_center_x = true, noplace_center_y=true, place_center_z=true}
+
+which is equivalent to
+
+    "place_center_x, noplace_center_y, place_center_z"
+
+or even
+
+    "place_center_x, place_center_z"
+
+since, by default, no schematic attributes are set.
 
 
 
