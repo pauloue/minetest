@@ -874,87 +874,6 @@ If you want to check the drawtype of a node, you could do:
 
 
 
-Mapgen aliases
---------------
-
-In a game, a certain number of these must be set to tell core mapgens which
-of the game's nodes are to be used by the core mapgens. For example:
-
-    minetest.register_alias("mapgen_stone", "default:stone")
-
-### Aliases needed for all mapgens except Mapgen V6
-
-#### Base terrain
-
-* mapgen_stone
-* mapgen_water_source
-* mapgen_river_water_source
-
-#### Caves
-
-Not required if cave liquid nodes are set in biome definitions.
-
-* mapgen_lava_source
-
-#### Dungeons
-
-Not required if dungeon nodes are set in biome definitions.
-
-* mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_desert_stone
-* mapgen_stair_desert_stone
-* mapgen_sandstone
-* mapgen_sandstonebrick
-* mapgen_stair_sandstone_block
-
-### Aliases needed for Mapgen V6
-
-#### Terrain and biomes
-
-* mapgen_stone
-* mapgen_water_source
-* mapgen_lava_source
-* mapgen_dirt
-* mapgen_dirt_with_grass
-* mapgen_sand
-* mapgen_gravel
-* mapgen_desert_stone
-* mapgen_desert_sand
-* mapgen_dirt_with_snow
-* mapgen_snowblock
-* mapgen_snow
-* mapgen_ice
-
-#### Flora
-
-* mapgen_tree
-* mapgen_leaves
-* mapgen_apple
-* mapgen_jungletree
-* mapgen_jungleleaves
-* mapgen_junglegrass
-* mapgen_pine_tree
-* mapgen_pine_needles
-
-#### Dungeons
-
-* mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_stair_desert_stone
-
-### Setting the node used in Mapgen Singlenode
-
-By default the world is filled with air nodes. To set a different node use, for
-example:
-
-    minetest.register_alias("mapgen_singlenode", "default:stone")
-
-
-
-
 Nodes
 =====
 
@@ -2669,17 +2588,97 @@ A single noise parameter table can be used for 2D or 3D noise.
 
 
 
-Ores
-====
+Map generation
+==============
 
-Ore types
----------
+Mapgen aliases
+--------------
+
+In a game, a certain number of these must be set to tell core mapgens which
+of the game's nodes are to be used by the core mapgens. For example:
+
+    minetest.register_alias("mapgen_stone", "default:stone")
+
+### Aliases needed for all mapgens except Mapgen V6
+
+#### Base terrain
+
+* mapgen_stone
+* mapgen_water_source
+* mapgen_river_water_source
+
+#### Caves
+
+Not required if cave liquid nodes are set in biome definitions.
+
+* mapgen_lava_source
+
+#### Dungeons
+
+Not required if dungeon nodes are set in biome definitions.
+
+* mapgen_cobble
+* mapgen_stair_cobble
+* mapgen_mossycobble
+* mapgen_desert_stone
+* mapgen_stair_desert_stone
+* mapgen_sandstone
+* mapgen_sandstonebrick
+* mapgen_stair_sandstone_block
+
+### Aliases needed for Mapgen V6
+
+#### Terrain and biomes
+
+* mapgen_stone
+* mapgen_water_source
+* mapgen_lava_source
+* mapgen_dirt
+* mapgen_dirt_with_grass
+* mapgen_sand
+* mapgen_gravel
+* mapgen_desert_stone
+* mapgen_desert_sand
+* mapgen_dirt_with_snow
+* mapgen_snowblock
+* mapgen_snow
+* mapgen_ice
+
+#### Flora
+
+* mapgen_tree
+* mapgen_leaves
+* mapgen_apple
+* mapgen_jungletree
+* mapgen_jungleleaves
+* mapgen_junglegrass
+* mapgen_pine_tree
+* mapgen_pine_needles
+
+#### Dungeons
+
+* mapgen_cobble
+* mapgen_stair_cobble
+* mapgen_mossycobble
+* mapgen_stair_desert_stone
+
+### Setting the node used in Mapgen Singlenode
+
+By default the world is filled with air nodes. To set a different node use, for
+example:
+
+    minetest.register_alias("mapgen_singlenode", "default:stone")
+
+Ores
+----
+
+### Ore types
 
 These tell in what manner the ore is generated.
 
 All default ores are of the uniformly-distributed scatter type.
 
-### `scatter`
+#### `scatter`
 
 Randomly chooses a location and generates a cluster of ore.
 
@@ -2687,7 +2686,7 @@ If `noise_params` is specified, the ore will be placed if the 3D perlin noise
 at that point is greater than the `noise_threshold`, giving the ability to
 create a non-equal distribution of ore.
 
-### `sheet`
+#### `sheet`
 
 Creates a sheet of ore in a blob shape according to the 2D perlin noise
 described by `noise_params` and `noise_threshold`. This is essentially an
@@ -2709,7 +2708,7 @@ this parameter is not specified, the default is 0.5.
 The ore parameters `clust_scarcity` and `clust_num_ores` are ignored for this
 ore type.
 
-### `puff`
+#### `puff`
 
 Creates a sheet of ore in a cloud-like puff shape.
 
@@ -2720,13 +2719,13 @@ positions within the currently generated chunk.
 The vertical top and bottom displacement of each puff are determined by the
 noise parameters `np_puff_top` and `np_puff_bottom`, respectively.
 
-### `blob`
+#### `blob`
 
 Creates a deformed sphere of ore according to 3d perlin noise described by
 `noise_params`. The maximum size of the blob is `clust_size`, and
 `clust_scarcity` has the same meaning as with the `scatter` type.
 
-### `vein`
+#### `vein`
 
 Creates veins of ore varying in density by according to the intersection of two
 instances of 3d perlin noise with different seeds, both described by
@@ -2757,7 +2756,7 @@ The following is a decent set of parameters to work from:
 **WARNING**: Use this ore type *very* sparingly since it is ~200x more
 computationally expensive than any other ore.
 
-### `stratum`
+#### `stratum`
 
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
@@ -2787,21 +2786,20 @@ solid-ore stratum would require a `clust_scarcity` of 1.
 The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
 `random_factor` are ignored by this ore type.
 
-Ore attributes
---------------
+### Ore attributes
 
 See section [Flag Specifier Format].
 
 Currently supported flags:
 `puff_cliffs`, `puff_additive_composition`.
 
-### `puff_cliffs`
+#### `puff_cliffs`
 
 If set, puff ore generation will not taper down large differences in
 displacement when approaching the edge of a puff. This flag has no effect for
 ore types other than `puff`.
 
-### `puff_additive_composition`
+#### `puff_additive_composition`
 
 By default, when noise described by `np_puff_top` or `np_puff_bottom` results
 in a negative displacement, the sub-column at that point is not generated. With
@@ -2809,16 +2807,12 @@ this attribute set, puff ore generation will instead generate the absolute
 difference in noise displacement values. This flag has no effect for ore types
 other than `puff`.
 
-
-
-
 Decoration types
-================
+----------------
 
 The varying types of decorations that can be placed.
 
-`simple`
---------
+### `simple`
 
 Creates a 1 times `H` times 1 column of a specified node (or a random node from
 a list, if a decoration list is specified). Can specify a certain node it must
@@ -2827,13 +2821,72 @@ decoration of random height between a specified lower and upper bound.
 This type of decoration is intended for placement of grass, flowers, cacti,
 papyri, waterlilies and so on.
 
-`schematic`
------------
+### `schematic`
 
 Copies a box of `MapNodes` from a specified schematic file (or raw description).
 Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
+
+Mapgen objects
+--------------
+
+A mapgen object is a construct used in map generation. Mapgen objects can be
+used by an `on_generate` callback to speed up operations by avoiding
+unnecessary recalculations, these can be retrieved using the
+`minetest.get_mapgen_object()` function. If the requested Mapgen object is
+unavailable, or `get_mapgen_object()` was called outside of an `on_generate()`
+callback, `nil` is returned.
+
+The following Mapgen objects are currently available:
+
+### `voxelmanip`
+
+This returns three values; the `VoxelManip` object to be used, minimum and
+maximum emerged position, in that order. All mapgens support this object.
+
+### `heightmap`
+
+Returns an array containing the y coordinates of the ground levels of nodes in
+the most recently generated chunk by the current mapgen.
+
+### `biomemap`
+
+Returns an array containing the biome IDs of nodes in the most recently
+generated chunk by the current mapgen.
+
+### `heatmap`
+
+Returns an array containing the temperature values of nodes in the most
+recently generated chunk by the current mapgen.
+
+### `humiditymap`
+
+Returns an array containing the humidity values of nodes in the most recently
+generated chunk by the current mapgen.
+
+### `gennotify`
+
+Returns a table mapping requested generation notification types to arrays of
+positions at which the corresponding generated structures are located within
+the current chunk. To set the capture of positions of interest to be recorded
+on generate, use `minetest.set_gen_notify()`.
+For decorations, the returned positions are the ground surface 'place_on'
+nodes, not the decorations themselves. A 'simple' type decoration is often 1
+node above the returned position and possibly displaced by 'place_offset_y'.
+
+Possible fields of the table returned are:
+
+* `dungeon`
+* `temple`
+* `cave_begin`
+* `cave_end`
+* `large_cave_begin`
+* `large_cave_end`
+* `decoration`
+
+Decorations have a key in the format of `"decoration#id"`, where `id` is the
+numeric unique decoration ID.
 
 
 
@@ -3190,69 +3243,6 @@ The coordinates are *inclusive*, like most other things in Minetest.
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
-
-
-
-
-Mapgen objects
-==============
-
-A mapgen object is a construct used in map generation. Mapgen objects can be
-used by an `on_generate` callback to speed up operations by avoiding
-unnecessary recalculations, these can be retrieved using the
-`minetest.get_mapgen_object()` function. If the requested Mapgen object is
-unavailable, or `get_mapgen_object()` was called outside of an `on_generate()`
-callback, `nil` is returned.
-
-The following Mapgen objects are currently available:
-
-### `voxelmanip`
-
-This returns three values; the `VoxelManip` object to be used, minimum and
-maximum emerged position, in that order. All mapgens support this object.
-
-### `heightmap`
-
-Returns an array containing the y coordinates of the ground levels of nodes in
-the most recently generated chunk by the current mapgen.
-
-### `biomemap`
-
-Returns an array containing the biome IDs of nodes in the most recently
-generated chunk by the current mapgen.
-
-### `heatmap`
-
-Returns an array containing the temperature values of nodes in the most
-recently generated chunk by the current mapgen.
-
-### `humiditymap`
-
-Returns an array containing the humidity values of nodes in the most recently
-generated chunk by the current mapgen.
-
-### `gennotify`
-
-Returns a table mapping requested generation notification types to arrays of
-positions at which the corresponding generated structures are located within
-the current chunk. To set the capture of positions of interest to be recorded
-on generate, use `minetest.set_gen_notify()`.
-For decorations, the returned positions are the ground surface 'place_on'
-nodes, not the decorations themselves. A 'simple' type decoration is often 1
-node above the returned position and possibly displaced by 'place_offset_y'.
-
-Possible fields of the table returned are:
-
-* `dungeon`
-* `temple`
-* `cave_begin`
-* `cave_end`
-* `large_cave_begin`
-* `large_cave_end`
-* `decoration`
-
-Decorations have a key in the format of `"decoration#id"`, where `id` is the
-numeric unique decoration ID.
 
 
 
