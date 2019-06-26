@@ -122,7 +122,7 @@ local function init_globals()
 
 	--[[
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 13, y = 9}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 15.5, y = 9}, {x = 0, y = 0})
 	tv_main.icon = "/home/ruben/dev/minetest/games/minetest_game/menu/icon.png"
 
 	if menustyle == "simple" then
