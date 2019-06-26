@@ -129,10 +129,10 @@ local function init_globals()
 		tv_main:add(tabs.simple_main)
 	else
 		tv_main:set_autosave_tab(true)
+		tv_main:add(tabs.new_game)
 		tv_main:add(tabs.local_game)
 		tv_main:add(tabs.play_online)
 	end
-
 	tv_main:add(tabs.content)
 	tv_main:add(tabs.settings)
 	tv_main:add(tabs.credits)
@@ -140,12 +140,13 @@ local function init_globals()
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
 
-	if menustyle ~= "simple" then
-		local last_tab = core.settings:get("maintab_LAST")
-		if last_tab and tv_main.current_tab ~= last_tab then
-			tv_main:set_tab(last_tab)
-		end
+	local last_tab = core.settings:get("maintab_LAST")
+	if menustyle ~= "simple" and last_tab and tv_main.current_tab ~= last_tab then
+		tv_main:set_tab(last_tab)
+	else
+		tv_main:set_tab("local")
 	end
+
 	ui.set_default("maintab")
 	tv_main:show()
 

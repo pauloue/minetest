@@ -31,10 +31,9 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = {
 		"container[0.375,0.375]",
-		"button[0,0;1.5,0.8;world_create;", fgettext("New"), "]",
-		"field[1.75,0;5.125,0.8;query;;]",
-		"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
-		"textlist[0,1.05;8.375,6.15;sp_worlds;", menu_render_worldlist(), ";", index, "]",
+		--"field[1.75,0;5.125,0.8;query;;", query, "]",
+		--"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
+		"textlist[0,0;8.375,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
 	}
 
 	if index > 0 then
@@ -45,9 +44,9 @@ local function get_formspec(tabview, name, tabdata)
 		retval[#retval + 1] = "button[2.875,0;2.625,0.8;world_configure;"
 		retval[#retval + 1] = fgettext("Configure")
 		retval[#retval + 1] = "]"
-		retval[#retval + 1] = "style[play;bgcolor=blue]"
+		retval[#retval + 1] = "style[play;bgcolor=#53AC56]"
 		retval[#retval + 1] = "button[5.75,0;2.625,0.8;play;"
-		retval[#retval + 1] = fgettext("Play Game")
+		retval[#retval + 1] = fgettext("Play World")
 		retval[#retval + 1] = "]"
 	--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
 	--"button[6.5,3.95;2.8,1;world_configure;", fgettext("Configure"), "]",
@@ -184,7 +183,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["play"] ~= nil or world_doubleclick or fields["key_enter"] then
+	if fields["play"] ~= nil or world_doubleclick then
 		local selected = core.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
@@ -224,14 +223,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		end
 	end
 
-	if fields["world_create"] ~= nil then
-		local create_world_dlg = create_create_world_dlg(true)
-		create_world_dlg:set_parent(this)
-		this:hide()
-		create_world_dlg:show()
-		mm_texture.update("singleplayer", current_game())
-		return true
-	end
 
 	if fields["world_delete"] ~= nil then
 		local selected = core.get_textlist_index("sp_worlds")
@@ -291,7 +282,7 @@ end
 --------------------------------------------------------------------------------
 return {
 	name = "local",
-	caption = fgettext("Start Game"),
+	caption = fgettext("Load World"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_change

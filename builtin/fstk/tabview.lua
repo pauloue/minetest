@@ -30,7 +30,7 @@
 local function add_tab(self,tab)
 	assert(tab.size == nil or (type(tab.size) == table and
 			tab.size.x ~= nil and tab.size.y ~= nil))
-	assert(tab.cbf_formspec ~= nil and type(tab.cbf_formspec) == "function")
+	assert(tab.show or tab.cbf_formspec ~= nil and type(tab.cbf_formspec) == "function")
 	assert(tab.cbf_button_handler == nil or
 			type(tab.cbf_button_handler) == "function")
 	assert(tab.cbf_events == nil or type(tab.cbf_events) == "function")
@@ -38,6 +38,7 @@ local function add_tab(self,tab)
 	local newtab = {
 		name = tab.name,
 		caption = tab.caption,
+		show = tab.show,
 		button_handler = tab.cbf_button_handler,
 		event_handler = tab.cbf_events,
 		get_formspec = tab.cbf_formspec,
@@ -187,25 +188,28 @@ end
 
 --------------------------------------------------------------------------------
 local function switch_to_tab(self, index)
-	--first call on_change for tab to leave
-	local oldtab = self.tablist[self.last_tab_index]
-	if oldtab and oldtab.on_change ~= nil then
-		oldtab.on_change("LEAVE", self.current_tab, self.tablist[index].name)
+	local old_tab = self.tablist[self.last_tab_index]
+	local new_tab = self.tablist[index]
+
+	if old_tab and old_tab.on_change ~= nil then
+		old_tab.on_change("LEAVE", self.current_tab, new_tab.name)
+	end
+
+	if new_tab.show then
+		new_tab.show(old_tab.name, new_tab.name, self)
+		return
 	end
 
 	--update tabview data
 	self.last_tab_index = index
-	local old_tab = self.current_tab
-	self.current_tab = self.tablist[index].name
+	self.current_tab = new_tab.name
 
 	if self.autosave_tab then
-		core.settings:set(self.name .. "_LAST",self.current_tab)
+		core.settings:set(self.name .. "_LAST", self.current_tab)
 	end
 
-	-- call for tab to enter
-	if self.tablist[index].on_change ~= nil then
-		self.tablist[index].on_change("ENTER",
-				old_tab,self.current_tab)
+	if new_tab.on_change ~= nil then
+		new_tab.on_change("ENTER", old_tab, self.current_tab)
 	end
 end
 
