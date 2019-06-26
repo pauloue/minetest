@@ -30,7 +30,6 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 
 dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
@@ -123,7 +122,8 @@ local function init_globals()
 
 	--[[
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 13, y = 9}, {x = 0, y = 0})
+	tv_main.icon = "/home/ruben/dev/minetest/games/minetest_game/menu/icon.png"
 
 	if menustyle == "simple" then
 		tv_main:add(tabs.simple_main)

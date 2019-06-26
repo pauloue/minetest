@@ -66,11 +66,11 @@ local function get_formspec(self)
 			local tsize = self.tablist[self.last_tab_index].tabsize or
 					{width=self.width, height=self.height}
 			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width+2,tsize.height,
+					string.format("size[%f,%f,%s]real_coordinates[true]",tsize.width+3,tsize.height,
 						dump(self.fixed_size))
 		end
 		formspec = formspec .. self:tab_header()
-		formspec = formspec .. "container[2,0]"
+		formspec = formspec .. "container[3,0]"
 		formspec = formspec ..
 				self.tablist[self.last_tab_index].get_formspec(
 					self,
@@ -143,19 +143,31 @@ local function tab_header(self)
 	local tsize = self.tablist[self.last_tab_index].tabsize or
 			{width=self.width, height=self.height}
 
-	local toadd = ""
+	local fs = {
+		("box[%f,%f;%f,%f;#53AC56CC]"):format(0, 0, 3, tsize.height)
+	}
 
-	for i=1,#self.tablist,1 do
-
-		if toadd ~= "" then
-			toadd = toadd .. ","
-		end
-
-		toadd = toadd .. self.tablist[i].caption
+	if self.icon then
+		fs[#fs + 1] = "image[0.75,0.375;1.5,1.5;"
+		fs[#fs + 1] = self.icon
+		fs[#fs + 1] = "]"
 	end
-	return ("box[%f,%f;%f,%f;#53AC56]"):format(-0.3, -0.3, 2 + 0.3, tsize.height + 2*0.3)
-	--return ("tabheader[%f,%f;%s;%s;%i;true;false]"):format(
-	--		self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
+
+	for i = 1, #self.tablist do
+		local y = (i - 1) * 0.8 + 2.75
+		fs[#fs + 1] = "label[0.375,"
+		fs[#fs + 1] = tonumber(y)
+		fs[#fs + 1] = ";"
+		fs[#fs + 1] = self.tablist[i].caption
+		fs[#fs + 1] = "]"
+
+		if i == self.last_tab_index then
+			fs[#fs + 1] = ("box[%f,%f;%f,%f;#53AC56CC]"):format(0, y - 0.4, 3, 0.8)
+		end
+	end
+
+	return table.concat(fs, "")
+
 end
 
 --------------------------------------------------------------------------------
