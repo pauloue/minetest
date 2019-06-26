@@ -145,11 +145,11 @@ local function tab_header(self)
 			{width=self.width, height=self.height}
 
 	local fs = {
-		("box[%f,%f;%f,%f;#53AC56CC]"):format(0, 0, 3, tsize.height)
+		("box[%f,%f;%f,%f;%s]"):format(0, 0, 3, tsize.height, self.bgcolor)
 	}
 
 	if self.icon then
-		fs[#fs + 1] = "image[0.75,0.375;1.5,1.5;"
+		fs[#fs + 1] = "image[1,0.375;1,1;"
 		fs[#fs + 1] = self.icon
 		fs[#fs + 1] = "]"
 	end
@@ -157,7 +157,7 @@ local function tab_header(self)
 	for i = 1, #self.tablist do
 		local tab = self.tablist[i]
 		local name = "tab_" .. tab.name
-		local y = (i - 1) * 0.8 + 2.75
+		local y = (i - 1) * 0.8 + 2.25
 
 		fs[#fs + 1] = "label[0.375,"
 		fs[#fs + 1] = tonumber(y)
@@ -176,7 +176,7 @@ local function tab_header(self)
 		fs[#fs + 1] = ";]"
 
 		if i == self.last_tab_index then
-			fs[#fs + 1] = ("box[%f,%f;%f,%f;#53AC56CC]"):format(0, y - 0.4, 3, 0.8)
+			fs[#fs + 1] = ("box[%f,%f;%f,%f;%s]"):format(0, y - 0.4, 3, 0.8, self.selcolor)
 		end
 	end
 
@@ -294,6 +294,8 @@ function tabview_create(name, size, tabheaderpos)
 	self.height   = size.y
 	self.header_x = tabheaderpos.x
 	self.header_y = tabheaderpos.y
+	self.bgcolor  = "#53AC56CC"
+	self.selcolor = "#53AC56CC"
 
 	setmetatable(self, tabview_metatable)
 
