@@ -154,17 +154,32 @@ local function tab_header(self)
 	end
 
 	for i = 1, #self.tablist do
+		local tab = self.tablist[i]
+		local name = "tab_" .. tab.name
 		local y = (i - 1) * 0.8 + 2.75
+
 		fs[#fs + 1] = "label[0.375,"
 		fs[#fs + 1] = tonumber(y)
 		fs[#fs + 1] = ";"
-		fs[#fs + 1] = self.tablist[i].caption
+		fs[#fs + 1] = tab.caption
 		fs[#fs + 1] = "]"
+
+		fs[#fs + 1] = "style["
+		fs[#fs + 1] = name
+		fs[#fs + 1] = ";border=false]"
+
+		fs[#fs + 1] = "button[0,"
+		fs[#fs + 1] = tonumber(y - 0.4 )
+		fs[#fs + 1] = ";3,0.8;"
+		fs[#fs + 1] = name
+		fs[#fs + 1] = ";]"
 
 		if i == self.last_tab_index then
 			fs[#fs + 1] = ("box[%f,%f;%f,%f;#53AC56CC]"):format(0, y - 0.4, 3, 0.8)
 		end
 	end
+
+	print(defaulttexturedir .. "blank.png")
 
 	return table.concat(fs, "")
 
@@ -173,9 +188,9 @@ end
 --------------------------------------------------------------------------------
 local function switch_to_tab(self, index)
 	--first call on_change for tab to leave
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, self.tablist[index].name)
+	local oldtab = self.tablist[self.last_tab_index]
+	if oldtab and oldtab.on_change ~= nil then
+		oldtab.on_change("LEAVE", self.current_tab, self.tablist[index].name)
 	end
 
 	--update tabview data
@@ -183,7 +198,7 @@ local function switch_to_tab(self, index)
 	local old_tab = self.current_tab
 	self.current_tab = self.tablist[index].name
 
-	if (self.autosave_tab) then
+	if self.autosave_tab then
 		core.settings:set(self.name .. "_LAST",self.current_tab)
 	end
 
@@ -195,12 +210,13 @@ local function switch_to_tab(self, index)
 end
 
 --------------------------------------------------------------------------------
-local function handle_tab_buttons(self,fields)
-	--save tab selection to config file
-	if fields[self.name] then
-		local index = tonumber(fields[self.name])
-		switch_to_tab(self, index)
-		return true
+local function handle_tab_buttons(self, fields)
+	for i = 1, #self.tablist do
+		local tab = self.tablist[i]
+		if fields["tab_" .. tab.name] then
+			switch_to_tab(self, i)
+			return true
+		end
 	end
 
 	return false
