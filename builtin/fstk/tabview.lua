@@ -294,8 +294,8 @@ function tabview_create(name, size, tabheaderpos)
 	self.height   = size.y
 	self.header_x = tabheaderpos.x
 	self.header_y = tabheaderpos.y
-	self.bgcolor  = "#53AC56CC"
-	self.selcolor = "#53AC56CC"
+	self.bgcolor  = "#53AC56AA"
+	self.selcolor = "#53AC56FF"
 
 	setmetatable(self, tabview_metatable)
 
