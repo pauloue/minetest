@@ -31,13 +31,13 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = {
 		"container[0.375,0.375]",
-		"button[0,0;1,0.8;world_create;", fgettext("New"), "]",
-		"field[1.25,0;6.125,0.8;query;;]",
-		"button[7.375,0;1,0.8;search;", fgettext("Search"), "]",
+		"button[0,0;1.5,0.8;world_create;", fgettext("New"), "]",
+		"field[1.75,0;5.125,0.8;query;;]",
+		"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
 		"textlist[0,1.05;8.375,6.15;sp_worlds;", menu_render_worldlist(), ";", index, "]",
 	}
 
-	if index then
+	if index > 0 then
 		retval[#retval + 1] = "container[0,7.45]"
 		retval[#retval + 1] = "button[0,0;2.625,0.8;world_delete;"
 		retval[#retval + 1] = fgettext("Delete")
@@ -51,6 +51,12 @@ local function get_formspec(tabview, name, tabdata)
 		retval[#retval + 1] = "]"
 	--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
 	--"button[6.5,3.95;2.8,1;world_configure;", fgettext("Configure"), "]",
+		retval[#retval + 1] = "container_end[]"
+	else
+		retval[#retval + 1] = "container[0,7.45]"
+		retval[#retval + 1] = "box[0,0;2.625,0.8;#333]"
+		retval[#retval + 1] = "box[2.875,0;2.625,0.8;#333]"
+		retval[#retval + 1] = "box[5.75,0;2.625,0.8;#333]"
 		retval[#retval + 1] = "container_end[]"
 	end
 
@@ -164,8 +170,8 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["cb_server"] then
-		core.settings:set("enable_server", fields["cb_server"])
+	if fields["cb_enable_server"] then
+		core.settings:set("enable_server", fields["cb_enable_server"])
 
 		return true
 	end
