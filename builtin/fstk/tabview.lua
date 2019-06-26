@@ -66,10 +66,11 @@ local function get_formspec(self)
 			local tsize = self.tablist[self.last_tab_index].tabsize or
 					{width=self.width, height=self.height}
 			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
+					string.format("size[%f,%f,%s]",tsize.width+2,tsize.height,
 						dump(self.fixed_size))
 		end
 		formspec = formspec .. self:tab_header()
+		formspec = formspec .. "container[2,0]"
 		formspec = formspec ..
 				self.tablist[self.last_tab_index].get_formspec(
 					self,
@@ -77,6 +78,7 @@ local function get_formspec(self)
 					self.tablist[self.last_tab_index].tabdata,
 					self.tablist[self.last_tab_index].tabsize
 					)
+		formspec = formspec .. "container_end[]"
 	end
 	return formspec
 end
@@ -138,6 +140,8 @@ end
 
 --------------------------------------------------------------------------------
 local function tab_header(self)
+	local tsize = self.tablist[self.last_tab_index].tabsize or
+			{width=self.width, height=self.height}
 
 	local toadd = ""
 
@@ -149,8 +153,9 @@ local function tab_header(self)
 
 		toadd = toadd .. self.tablist[i].caption
 	end
-	return string.format("tabheader[%f,%f;%s;%s;%i;true;false]",
-			self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
+	return ("box[%f,%f;%f,%f;#53AC56]"):format(-0.3, -0.3, 2 + 0.3, tsize.height + 2*0.3)
+	--return ("tabheader[%f,%f;%s;%s;%i;true;false]"):format(
+	--		self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
 end
 
 --------------------------------------------------------------------------------
