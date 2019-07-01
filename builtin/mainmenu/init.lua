@@ -52,13 +52,9 @@ local tabs = {}
 
 tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
-tabs.credits  = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-if menustyle == "simple" then
-	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
-else
-	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
-	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
-end
+local menu_credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
+local menu_local = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
+tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -122,9 +118,10 @@ local function init_globals()
 			core.settings:set("menu_last_game", default_game)
 		end
 
-		mm_texture.init()
+		--mm_texture.init()
 	end
 
+	--[[
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
@@ -153,8 +150,41 @@ local function init_globals()
 	tv_main:show()
 
 	ui.update()
+	--]]
 
 	core.sound_play("main_menu", true)
 end
 
 init_globals()
+
+core.set_background("header", defaulttexturedir .. "menu_header.png")
+
+local homepage = dialog_create("home",
+	function()
+		return [[
+			size[5,7.6]
+			real_coordinates[true]
+			bgcolor[#00000000;]
+			button[0,0;5,1.2;btn_start_game;Start Game]
+			button[0,1.6;5,1.2;btn_join_game;Join Game]
+			button[0,3.2;5,1.2;btn_content;Content]
+			button[0,4.8;5,1.2;btn_settings;Settings]
+			button[0,6.4;5,1.2;btn_credits;Credits]
+		]]
+	end,
+	function(self, fields)
+		core.set_background("header", "")
+		if fields.btn_start_game then
+		elseif fields.btn_join_game then
+		elseif fields.btn_content then
+		elseif fields.btn_settings then
+		elseif fields.btn_credits then
+			self:hide()
+			menu_credits:show()
+			return true
+		end
+	end)
+
+ui.set_default("home")
+homepage:show()
+ui.update()

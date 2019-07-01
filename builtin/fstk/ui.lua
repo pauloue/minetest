@@ -196,6 +196,7 @@ end
 
 --------------------------------------------------------------------------------
 core.event_handler = function(event)
+	print("EVENT", event)
 	if ui.handle_events(event) then
 		ui.update()
 		return

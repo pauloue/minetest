@@ -107,13 +107,12 @@ local function buildCreditList(source)
 	return table.concat(ret, ",,")
 end
 
-return {
-	name = "credits",
-	caption = fgettext("Credits"),
-	cbf_formspec = function(tabview, name, tabdata)
+return dialog_create("credits",
+	function()
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
-		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
+		return "size[12,5.5]" ..
+			"image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
 			"label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
 			"label[0.5,3.5;http://minetest.net]" ..
 			"tablecolumns[color;text]" ..
@@ -128,5 +127,4 @@ return {
 			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
 			buildCreditList(previous_contributors) .. "," ..
 			";1]"
-	end
-}
+	end)
