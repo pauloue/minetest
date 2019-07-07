@@ -17,14 +17,12 @@
 
 
 local function delete_world_formspec(dialogdata)
-	local retval =
-		"size[10,2.5,true]" ..
+	return "size[10,2.5,true]" ..
 		"label[0.5,0.5;" ..
 		fgettext("Delete World \"$1\"?", dialogdata.delete_name) .. "]" ..
 		"style[world_delete_confirm;bgcolor=red]" ..
 		"button[0.5,1.5;2.5,0.5;world_delete_confirm;" .. fgettext("Delete") .. "]" ..
 		"button[7.0,1.5;2.5,0.5;world_delete_cancel;" .. fgettext("Cancel") .. "]"
-	return retval
 end
 
 local function delete_world_buttonhandler(this, fields)
@@ -34,29 +32,27 @@ local function delete_world_buttonhandler(this, fields)
 			core.delete_world(this.data.delete_index)
 			menudata.worldlist:refresh()
 		end
-		this:delete()
+		this:hide()
+		return true
+
+	elseif fields["world_delete_cancel"] then
+		this:hide()
 		return true
 	end
-
-	if fields["world_delete_cancel"] then
-		this:delete()
-		return true
-	end
-
-	return false
 end
 
 
 function create_delete_world_dlg(name_to_del, index_to_del)
-	assert(name_to_del ~= nil and type(name_to_del) == "string" and name_to_del ~= "")
-	assert(index_to_del ~= nil and type(index_to_del) == "number")
+	assert(type(name_to_del) == "string")
+	assert(type(index_to_del) == "number")
 
-	local retval = dialog_create("delete_world",
-					delete_world_formspec,
-					delete_world_buttonhandler,
-					nil)
-	retval.data.delete_name  = name_to_del
-	retval.data.delete_index = index_to_del
+	local dlg = View.new({
+		name = "delete_world",
+		get_formspec = delete_world_formspec,
+		button_handler = delete_world_buttonhandler
+	})
+	dlg.data.delete_name  = name_to_del
+	dlg.data.delete_index = index_to_del
 
-	return retval
+	return dlg
 end

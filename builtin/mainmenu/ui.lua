@@ -17,19 +17,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ui = {}
-ui.childlist = {}
-
---- Add a view to the UI.
--- @param view View
-function ui.add(view)
-	ui.childlist[view.name] = view
-end
-
---- Delete a view from the UI.
--- @param view View
-function ui.delete(view)
-	ui.childlist[view.name] = nil
-end
+ui.childlist = setmetatable({}, { __mode = "v" })
 
 --- Set the root view.
 -- @param view View
@@ -37,11 +25,53 @@ function ui.set_root(view)
 	ui.root_view = view
 end
 
---- Return the view with the given name.
--- @param name string
--- @return View or nil
-function ui.get_view(name)
-	return ui.childlist[name]
+View = {}
+
+--- Set parent view.
+-- @param view View
+function View:set_parent(view)
+	self.parent = view
+end
+
+--- Hide the active view and show this view.
+function View:show()
+	ui.active_view = self
+	if self.on_enter then
+		self:on_enter()
+	end
+end
+
+--- Hide the view and show its parent.
+function View:hide()
+	self.parent:show()
+end
+
+--- Add a new view to the UI and return the view.
+-- @param def table: View definition table.
+-- def.name string: A unique name for the view.
+-- def.get_formspec function(data): Function that returns the formspec.
+-- def.button_handler function(self, fields): Function to handle buttons.
+-- The formspec will be updated if it returns true.
+-- def.on_enter function(self) or nil: Called when the view is shown.
+-- @return View
+-- Field data is a table used to store data specific to the view.
+function View.new(def)
+	assert(type(def.name) == "string")
+	assert(type(def.get_formspec) == "function")
+	assert(type(def.button_handler) == "function")
+
+	local self = {}
+	setmetatable(self, { __index = View })
+
+	self.name = def.name
+	self.parent = ui.root_view
+	self.get_formspec = def.get_formspec
+	self.button_handler = def.button_handler
+	self.on_enter = def.on_enter
+	self.data = {}
+
+	ui.childlist[view.name] = view
+	return self
 end
 
 --- Update the menu formspec based on the active view.
@@ -68,7 +98,9 @@ function ui.update()
 			"]textlist[0.2,0.8;11.5,3.5;;" .. gamedata.errormessage ..
 			"]button[4.5,4.6;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
 	else
-		ui.active_view = ui.active_view or ui.root_view
+		if not ui.active_view then
+			ui.root_view:show()
+		end
 		formspec = ui.active_view.get_formspec(view.data)
 	end
 	core.update_formspec(formspec)

@@ -160,22 +160,26 @@ init_globals()
 
 core.set_background("header", defaulttexturedir .. "menu_header.png")
 
+local btn_img = defaulttexturedir .. "progress_bar_bg.png"
+
 local homepage = dialog_create("home",
 	function()
-		return [[
-			size[5,7.6]
-			real_coordinates[true]
-			bgcolor[#00000000;]
-			button[0,0;5,1.2;btn_start_game;Start Game]
-			button[0,1.6;5,1.2;btn_join_game;Join Game]
-			button[0,3.2;5,1.2;btn_content;Content]
-			button[0,4.8;5,1.2;btn_settings;Settings]
-			button[0,6.4;5,1.2;btn_credits;Credits]
-		]]
+		return "size[5,7.6]" ..
+			"real_coordinates[true]" ..
+			"bgcolor[#00000000;]" ..
+			"style_type[button;bgimg=" .. btn_img .. ";border=false]" ..
+			"button[0,0;5,1.2;btn_start_game;Start Game]" ..
+			"button[0,1.6;5,1.2;btn_join_game;Join Game]" ..
+			"button[0,3.2;5,1.2;btn_content;Content]" ..
+			"button[0,4.8;5,1.2;btn_settings;Settings]" ..
+			"button[0,6.4;5,1.2;btn_credits;Credits]"
 	end,
 	function(self, fields)
 		core.set_background("header", "")
 		if fields.btn_start_game then
+			self:hide()
+			menu_local:show()
+			return true
 		elseif fields.btn_join_game then
 		elseif fields.btn_content then
 		elseif fields.btn_settings then

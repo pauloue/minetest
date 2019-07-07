@@ -39,7 +39,12 @@ local dialog_metatable = {
 				if not self.hidden then return self.eventhandler(self,event) end
 			end,
 	hide = function(self) self.hidden = true end,
-	show = function(self) self.hidden = false end,
+	show = function(self)
+		self.hidden = false
+		if self.on_enter then
+			self.on_enter("ENTER", nil, self)
+		end
+	end,
 	delete = function(self)
 			if self.parent ~= nil then
 				self.parent:show()
