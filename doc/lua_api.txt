@@ -923,6 +923,36 @@ example:
 
     minetest.register_alias("mapgen_singlenode", "default:stone")
 
+Crafting recipes
+----------------
+
+Craft recipes are registered with `minetest.register_craft`.
+See [Craft recipe definition](/definition-tables/#craft-recipe-definition) for
+the definition table.
+
+### Craft types
+
+- `shaped`: The input items must be arranged exactly like in the recipe.
+- `shapeless`: The input items can be arranged in any way.
+- `toolrepair`: Allows crafting a repaired tool from two worn tools. A game can
+  have only one of these recipes; it applies to all tools.
+- `cooking`: Has an input item, an output, and a cooking time.
+- `fuel`: Specifies the burning time for a fuel. Has no output.
+
+### Crafting methods
+
+Different crafting methods can be used based on the inventory list where the
+input items are placed. Crafting with the method "normal" is supported through
+the `craft` inventory list. To implement crafting with other crafting methods,
+use `mientest.get_craft_result`.
+
+- `normal`: Used by recipes with the "shaped", "shapeless", and "toolrepair"
+  craft types.
+- `cooking`: Used by recipes of type "cooking". Can be used for items placed in
+  a furnace input slot.
+- `fuel`: Used by recipes of type "fuel". Can be used for items placed in a
+  furnace fuel slot.
+
 Registered definitions
 ----------------------
 
@@ -6549,8 +6579,8 @@ Used by `minetest.register_node`.
         -- removing the node.
     }
 
-Crafting recipes
-----------------
+Craft recipe definition
+-----------------------
 
 Used by `minetest.register_craft`.
 
