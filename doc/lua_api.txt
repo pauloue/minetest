@@ -220,133 +220,6 @@ client and will be available for use by the mod.
 
 Translation files for the clients. (See [Translations])
 
-Naming conventions
-------------------
-
-Registered names should generally be in this format:
-
-    modname:<whatever>
-
-`<whatever>` can have these characters:
-
-    a-zA-Z0-9_
-
-This is to prevent conflicting names from corrupting maps and is
-enforced by the mod loader.
-
-Registered names can be overridden by prefixing the name with `:`. This can
-be used for overriding the registrations of some other mod.
-
-The `:` prefix can also be used for maintaining backwards compatibility.
-
-### Example
-
-In the mod `experimental`, there is the ideal item/node/entity name `tnt`.
-So the name should be `experimental:tnt`.
-
-Any mod can redefine `experimental:tnt` by using the name
-
-    :experimental:tnt
-
-when registering it. That mod is required to have `experimental` as a
-dependency.
-
-
-
-
-Aliases
-=======
-
-Aliases of itemnames can be added by using
-`minetest.register_alias(alias, original_name)` or
-`minetest.register_alias_force(alias, original_name)`.
-
-This adds an alias `alias` for the item called `original_name`.
-From now on, you can use `alias` to refer to the item `original_name`.
-
-The only difference between `minetest.register_alias` and
-`minetest.register_alias_force` is that if an item named `alias` already exists,
-`minetest.register_alias` will do nothing while
-`minetest.register_alias_force` will unregister it.
-
-This can be used for maintaining backwards compatibility.
-
-This can also set quick access names for things, e.g. if
-you have an item called `epiclylongmodname:stuff`, you could do
-
-    minetest.register_alias("stuff", "epiclylongmodname:stuff")
-
-and be able to use `/giveme stuff`.
-
-Mapgen aliases
---------------
-
-In a game, a certain number of these must be set to tell core mapgens which
-of the game's nodes are to be used for core mapgen generation. For example:
-
-    minetest.register_alias("mapgen_stone", "default:stone")
-
-### Aliases for non-V6 mapgens
-
-#### Essential aliases
-
-* mapgen_stone
-* mapgen_water_source
-* mapgen_river_water_source
-
-`mapgen_river_water_source` is required for mapgens with sloping rivers where
-it is necessary to have a river liquid node with a short `liquid_range` and
-`liquid_renewable = false` to avoid flooding.
-
-#### Optional aliases
-
-* mapgen_lava_source
-
-Fallback lava node used if cave liquids are not defined in biome definitions.
-Deprecated for non-V6 mapgens, define cave liquids in biome definitions instead.
-
-* mapgen_cobble
-
-Fallback node used if dungeon nodes are not defined in biome definitions.
-Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead.
-
-### Aliases needed for Mapgen V6
-
-* mapgen_stone
-* mapgen_water_source
-* mapgen_lava_source
-* mapgen_dirt
-* mapgen_dirt_with_grass
-* mapgen_sand
-* mapgen_gravel
-* mapgen_desert_stone
-* mapgen_desert_sand
-* mapgen_dirt_with_snow
-* mapgen_snowblock
-* mapgen_snow
-* mapgen_ice
-
-* mapgen_tree
-* mapgen_leaves
-* mapgen_apple
-* mapgen_jungletree
-* mapgen_jungleleaves
-* mapgen_junglegrass
-* mapgen_pine_tree
-* mapgen_pine_needles
-
-* mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_stair_desert_stone
-
-### Setting the node used in Mapgen Singlenode
-
-By default the world is filled with air nodes. To set a different node use, for
-example:
-
-    minetest.register_alias("mapgen_singlenode", "default:stone")
-
 
 
 
@@ -857,8 +730,201 @@ A positional sound will only be heard by players that are within
 
 
 
+Content registration
+====================
+
+Naming conventions
+------------------
+
+Registered names should generally be in this format:
+
+    modname:<whatever>
+
+`<whatever>` can have these characters:
+
+    a-zA-Z0-9_
+
+This is to prevent conflicting names from corrupting maps and is
+enforced by the mod loader.
+
+Registered names can be overridden by prefixing the name with `:`. This can
+be used for overriding the registrations of some other mod.
+
+The `:` prefix can also be used for maintaining backwards compatibility.
+
+### Example
+
+In the mod `experimental`, there is the ideal item/node/entity name `tnt`.
+So the name should be `experimental:tnt`.
+
+Any mod can redefine `experimental:tnt` by using the name
+
+    :experimental:tnt
+
+when registering it. That mod is required to have `experimental` as a
+dependency.
+
+Items
+-----
+
+### Item types
+
+There are three kinds of items: nodes, tools and craftitems.
+
+* Node: Can be placed in the world's voxel grid
+* Tool: Has a wear property but cannot be stacked. The default use action is to
+  dig nodes or hit objects according to its tool capabilities.
+* Craftitem: Cannot dig nodes or be placed
+
+### Amount and wear
+
+All item stacks have an amount between 0 and 65535. It is 1 by
+default. Tool item stacks can not have an amount greater than 1.
+
+Tools use a wear (damage) value ranging from 0 to 65535. The
+value 0 is the default and is used for unworn tools. The values
+1 to 65535 are used for worn tools, where a higher value stands for
+a higher wear. Non-tools always have a wear value of 0.
+
+### Item formats
+
+Items and item stacks can exist in three formats: Serializes, table format
+and `ItemStack`.
+
+When an item must be passed to a function, it can usually be in any of
+these formats.
+
+#### Serialized
+
+This is called "stackstring" or "itemstring". It is a simple string with
+1-3 components: the full item identifier, an optional amount and an optional
+wear value. Syntax:
+
+    <identifier> [<amount>[ <wear>]]
+
+Examples:
+
+* `'default:apple'`: 1 apple
+* `'default:dirt 5'`: 5 dirt
+* `'default:pick_stone'`: a new stone pickaxe
+* `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
+
+#### Table format
+
+Examples:
+
+5 dirt nodes:
+
+    {name="default:dirt", count=5, wear=0, metadata=""}
+
+A wooden pick about 1/3 worn out:
+
+    {name="default:pick_wood", count=1, wear=21323, metadata=""}
+
+An apple:
+
+    {name="default:apple", count=1, wear=0, metadata=""}
+
+#### `ItemStack`
+
+A native C++ format with many helper methods. Useful for converting
+between formats. See the [Class reference] section for details.
+
+Aliases
+-------
+
+Aliases of itemnames can be added by using
+`minetest.register_alias(alias, original_name)` or
+`minetest.register_alias_force(alias, original_name)`.
+
+This adds an alias `alias` for the item called `original_name`.
+From now on, you can use `alias` to refer to the item `original_name`.
+
+The only difference between `minetest.register_alias` and
+`minetest.register_alias_force` is that if an item named `alias` already exists,
+`minetest.register_alias` will do nothing while
+`minetest.register_alias_force` will unregister it.
+
+This can be used for maintaining backwards compatibility.
+
+This can also set quick access names for things, e.g. if
+you have an item called `epiclylongmodname:stuff`, you could do
+
+    minetest.register_alias("stuff", "epiclylongmodname:stuff")
+
+and be able to use `/giveme stuff`.
+
+Mapgen aliases
+--------------
+
+In a game, a certain number of these must be set to tell core mapgens which
+of the game's nodes are to be used for core mapgen generation. For example:
+
+    minetest.register_alias("mapgen_stone", "default:stone")
+
+### Aliases for non-V6 mapgens
+
+#### Essential aliases
+
+* mapgen_stone
+* mapgen_water_source
+* mapgen_river_water_source
+
+`mapgen_river_water_source` is required for mapgens with sloping rivers where
+it is necessary to have a river liquid node with a short `liquid_range` and
+`liquid_renewable = false` to avoid flooding.
+
+#### Optional aliases
+
+* mapgen_lava_source
+
+Fallback lava node used if cave liquids are not defined in biome definitions.
+Deprecated for non-V6 mapgens, define cave liquids in biome definitions instead.
+
+* mapgen_cobble
+
+Fallback node used if dungeon nodes are not defined in biome definitions.
+Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead.
+
+### Aliases needed for Mapgen V6
+
+* mapgen_stone
+* mapgen_water_source
+* mapgen_lava_source
+* mapgen_dirt
+* mapgen_dirt_with_grass
+* mapgen_sand
+* mapgen_gravel
+* mapgen_desert_stone
+* mapgen_desert_sand
+* mapgen_dirt_with_snow
+* mapgen_snowblock
+* mapgen_snow
+* mapgen_ice
+
+* mapgen_tree
+* mapgen_leaves
+* mapgen_apple
+* mapgen_jungletree
+* mapgen_jungleleaves
+* mapgen_junglegrass
+* mapgen_pine_tree
+* mapgen_pine_needles
+
+* mapgen_cobble
+* mapgen_stair_cobble
+* mapgen_mossycobble
+* mapgen_stair_desert_stone
+
+### Setting the node used in Mapgen Singlenode
+
+By default the world is filled with air nodes. To set a different node use, for
+example:
+
+    minetest.register_alias("mapgen_singlenode", "default:stone")
+
 Registered definitions
-======================
+----------------------
 
 Anything added using certain [Registration functions] gets added to one or more
 of the global [Registered definition tables].
@@ -1374,78 +1440,6 @@ or even
     "place_center_x, place_center_z"
 
 since, by default, no schematic attributes are set.
-
-
-
-
-Items
-=====
-
-Item types
-----------
-
-There are three kinds of items: nodes, tools and craftitems.
-
-* Node: Can be placed in the world's voxel grid
-* Tool: Has a wear property but cannot be stacked. The default use action is to
-  dig nodes or hit objects according to its tool capabilities.
-* Craftitem: Cannot dig nodes or be placed
-
-Amount and wear
----------------
-
-All item stacks have an amount between 0 and 65535. It is 1 by
-default. Tool item stacks can not have an amount greater than 1.
-
-Tools use a wear (damage) value ranging from 0 to 65535. The
-value 0 is the default and is used for unworn tools. The values
-1 to 65535 are used for worn tools, where a higher value stands for
-a higher wear. Non-tools always have a wear value of 0.
-
-Item formats
-------------
-
-Items and item stacks can exist in three formats: Serializes, table format
-and `ItemStack`.
-
-When an item must be passed to a function, it can usually be in any of
-these formats.
-
-### Serialized
-
-This is called "stackstring" or "itemstring". It is a simple string with
-1-3 components: the full item identifier, an optional amount and an optional
-wear value. Syntax:
-
-    <identifier> [<amount>[ <wear>]]
-
-Examples:
-
-* `'default:apple'`: 1 apple
-* `'default:dirt 5'`: 5 dirt
-* `'default:pick_stone'`: a new stone pickaxe
-* `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
-
-### Table format
-
-Examples:
-
-5 dirt nodes:
-
-    {name="default:dirt", count=5, wear=0, metadata=""}
-
-A wooden pick about 1/3 worn out:
-
-    {name="default:pick_wood", count=1, wear=21323, metadata=""}
-
-An apple:
-
-    {name="default:apple", count=1, wear=0, metadata=""}
-
-### `ItemStack`
-
-A native C++ format with many helper methods. Useful for converting
-between formats. See the [Class reference] section for details.
 
 
 
